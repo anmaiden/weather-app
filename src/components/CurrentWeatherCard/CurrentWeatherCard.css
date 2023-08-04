@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.city-card-wrapper {
+  margin: 10px 20px;
+  display: flex;
+}
+
+.card-item {
+  padding: 10px 20px;
+  text-align: end;
+  width: 300px;
+  height: 250px;
+  background-color: rgb(231, 243, 243);
+  border-radius: 10px;
+}
+
+.city-info-wrapper,
+.weather-report-wrapper,
+.temperature {
+  display: flex;
+  padding: 10px 0px;
+  justify-content: space-between;
+}
+
+.temperature,
+.city-name {
+  font-size: 25px;
+  font-weight: bold;
+}
+.temperature-unit{
+  padding-left: 10px;
+}
+.temperature-unit:hover{
+  color: rgb(89, 108, 138);
+  cursor: pointer;
+}
+.temperature-unit.active {
+  color: rgb(179, 127, 160);
+}

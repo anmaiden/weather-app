@@ -10,11 +10,11 @@ export interface Weather {
   wind: Wind;
 }
 
-interface WeatherDescription {
+export interface WeatherDescription {
   description: string;
 } 
 
-interface Wind {
+export interface Wind {
   speed: number;
   deg: number;
 }

@@ -2,45 +2,50 @@ import React, { useState } from "react";
 import "./CitySearch.css";
 import { getCurrentWeather } from "../../services/weatherService";
 import { Weather } from "../../types/WeatherData";
+import CurrentWeatherCard from "../CurrentWeatherCard/CurrentWeatherCard";
 
 const CitySearch: React.FC = () => {
   const [city, setCity] = useState("");
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [error, setError] = useState("");
+  const [weatherCards, setWeatherCards] = useState<Weather[]>([]);
 
   const handleSearch = async () => {
     try {
       const weatherData = await getCurrentWeather(city, "en");
-      setWeather(weatherData);
-      setError("");
+      setWeatherCards((prevWeatherCards) => [...prevWeatherCards, weatherData]);
+      setCity("");
     } catch (error) {
-      setWeather(null);
-      setError("Error retrieving weather data. Please try again.");
+      console.error("Error retrieving weather data. Please try again.", error);
     }
+  };
+
+  const handleClose = (index: number) => {
+    setWeatherCards((prevWeatherCards) => {
+      const updatedCards = [...prevWeatherCards];
+      updatedCards.splice(index, 1);
+      return updatedCards;
+    });
   };
 
   return (
     <div>
       <input
         type="text"
+        className="search-input"
         value={city}
         onChange={(e) => setCity(e.target.value)}
         placeholder="Enter a city name"
       />
-      <button onClick={handleSearch}>Search</button>
+      <button onClick={handleSearch} className="search-btn">
+        Add
+      </button>
 
-      {weather && (
-        <div>
-          <h2>{weather.name}</h2>
-          <p>Temperature: {weather.main.temp}°C</p>
-          <p>Feels like: {weather.main.feels_like}°C</p>
-          <p>Humidity: {weather.main.humidity}%</p>
-          <p>Pressure: {weather.main.pressure}Pa</p>
-          <p>Description: {weather.weather[0].description}</p>
-        </div>
-      )}
-
-      {error && <p>{error}</p>}
+      {weatherCards.map((weatherData, index) => (
+        <CurrentWeatherCard
+          key={index}
+          weather={weatherData}
+          handleClose={() => handleClose(index)}
+        />
+      ))}
     </div>
   );
 };
