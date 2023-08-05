@@ -2,9 +2,12 @@
   margin: 0;
   padding: 0;
 }
+.weather-cards-container {
+  display: flex;
+  justify-content: center;
 
+}
 .city-card-wrapper {
-  margin: 10px 20px;
   display: flex;
 }
 
@@ -24,7 +27,15 @@
   padding: 10px 0px;
   justify-content: space-between;
 }
-
+.btn-close{
+  background-color: transparent;
+  border: none;
+}
+.btn-close:hover{
+  cursor: pointer;
+  transition-duration: .4s;
+  color: rgb(189, 189, 161);
+}
 .temperature,
 .city-name {
   font-size: 25px;
@@ -34,9 +45,10 @@
   padding-left: 10px;
 }
 .temperature-unit:hover{
-  color: rgb(89, 108, 138);
   cursor: pointer;
+  transition-duration: .4s;
+  color: rgb(189, 189, 161);
 }
 .temperature-unit.active {
-  color: rgb(179, 127, 160);
+  color: rgb(126, 126, 106);
 }

@@ -26,6 +26,12 @@ const CitySearch: React.FC = () => {
     });
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div>
       <input
@@ -33,19 +39,22 @@ const CitySearch: React.FC = () => {
         className="search-input"
         value={city}
         onChange={(e) => setCity(e.target.value)}
+        onKeyPress={handleKeyPress}
         placeholder="Enter a city name"
       />
       <button onClick={handleSearch} className="search-btn">
         Add
       </button>
 
-      {weatherCards.map((weatherData, index) => (
-        <CurrentWeatherCard
-          key={index}
-          weather={weatherData}
-          handleClose={() => handleClose(index)}
-        />
-      ))}
+      <div className="weather-cards-container">
+        {weatherCards.map((weatherData, index) => (
+          <CurrentWeatherCard
+            key={index}
+            weather={weatherData}
+            handleClose={() => handleClose(index)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
