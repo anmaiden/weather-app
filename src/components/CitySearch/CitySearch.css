@@ -1,4 +1,8 @@
+.search-container{
+ text-align: center;
+}
 .search-input {
+  margin-top: 50px;
   width: 30%;
   padding: 8px 16px;
   font-size: 16px;
@@ -24,6 +28,27 @@
 .search-btn:hover{
   cursor: pointer;
 }
+.suggestions {
+  color: black;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestions li {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.suggestions li:hover {
+  background-color: #f2f2f2;
+}
+.error-message{
+  padding-top: 20px;
+  font-size: 15px;
+  color: rgb(173, 111, 111);
+}
+/* container for weather cards */
 .weather-cards-container {
   padding-top:50px;
   display: grid;

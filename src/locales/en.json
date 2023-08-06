@@ -1,0 +1,15 @@
+{
+  "placeholder": "Find a city",
+  "add": "Add",
+  "enter": "Enter a city name",
+  "temperature": "Temperature",
+  "wind": "Wind",
+  "m/s": "m/s",
+  "Pa": "Pa",
+  "humidity": "Humidity",
+  "pressure": "Pressure",
+  "feelsLike": "Feels like",
+  "error": "City is not found",
+  "daysOfWeek": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+}

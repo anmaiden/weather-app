@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Weather} from '../types/WeatherData';
+import { Weather } from '../types/WeatherData';
 
 const API_KEY = 'b66d6f1fc8d37d319e9b20b2ae41fc28';
 
@@ -11,3 +11,4 @@ export const getCurrentWeather = async (
   const response = await axios.get(url);
   return response.data;
 };
+

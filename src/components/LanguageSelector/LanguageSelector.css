@@ -1,0 +1,8 @@
+.language-select{
+  border: none;
+  font-size: 18px;
+}
+.language-select:hover,
+option:hover{
+  cursor: pointer;
+}

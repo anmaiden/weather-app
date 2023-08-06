@@ -27,6 +27,21 @@
   padding: 10px 0px;
   justify-content: space-between;
 }
+.current-date{
+  display: flex;
+  font-size: 18px;
+}
+.description-icon-wrapper{
+  color: grey;
+  display: flex;
+  align-items: center;
+}
+.feels-like{
+  font-weight: normal;
+  text-align: left;
+  color: grey;
+  font-size: 11px;
+}
 .btn-close{
   background-color: transparent;
   border: none;
@@ -36,8 +51,12 @@
   transition-duration: .4s;
   color: rgb(189, 189, 161);
 }
-.temperature,
+
 .city-name {
+  font-weight: bold;
+  font-size: 20px;
+}
+.temperature-wrapper{
   font-size: 25px;
   font-weight: bold;
 }

@@ -1,3 +1,11 @@
 *{
   font-family: 'Open Sans', sans-serif;
 }
+.app-container{
+  max-width: 1480px;
+  padding: 20px;
+  margin: 0 auto;
+}
+.lang-container{
+  text-align: right;
+}

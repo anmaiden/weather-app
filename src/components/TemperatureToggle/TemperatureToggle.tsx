@@ -3,16 +3,19 @@ import React, { useState } from "react";
 interface TemperatureToggleProps {
   celsiusTemperature: number;
   fahrenheitTemperature: number;
+  onTemperatureUnitChange: (isCelsius: boolean) => void;
 }
 
 const TemperatureToggle: React.FC<TemperatureToggleProps> = ({
   celsiusTemperature,
   fahrenheitTemperature,
+  onTemperatureUnitChange,
 }) => {
   const [isCelsius, setIsCelsius] = useState(true);
 
   const toggleTemperatureUnit = () => {
     setIsCelsius(!isCelsius);
+    onTemperatureUnitChange(!isCelsius);
   };
 
   const roundedCelsiusTemperature = Math.round(celsiusTemperature);
@@ -24,11 +27,11 @@ const TemperatureToggle: React.FC<TemperatureToggleProps> = ({
         {isCelsius ? roundedCelsiusTemperature : roundedFahrenheitTemperature}
         <span className="units-measurement" onClick={toggleTemperatureUnit}>
           <span className={`temperature-unit ${isCelsius ? "active" : ""}`}>
-            C
+            {"\u00b0"}C
           </span>
           {" | "}
           <span className={`temperature-unit ${!isCelsius ? "active" : ""}`}>
-            F
+            {"\u00b0"}F
           </span>
         </span>
       </p>

@@ -1,5 +1,6 @@
 export interface Weather {
   name: string;
+  id: string;
   main: {
     temp: number;
     pressure: number;
@@ -13,6 +14,7 @@ export interface Weather {
 
 export interface WeatherDescription {
   description: string;
+  icon: string;
 } 
 
 export interface Wind {
