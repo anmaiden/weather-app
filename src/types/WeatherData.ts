@@ -10,6 +10,7 @@ export interface Weather {
   weather: Array<WeatherDescription>;
   wind: Wind;
   sys: Sys;
+  dt: Dt;
 }
 
 export interface WeatherDescription {
@@ -24,4 +25,8 @@ export interface Wind {
 
 export interface Sys {
   country: string;
+}
+
+export interface Dt {
+  dt: string;
 }

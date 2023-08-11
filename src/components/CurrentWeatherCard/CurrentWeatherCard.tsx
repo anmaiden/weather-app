@@ -6,7 +6,8 @@ import TemperatureToggle from "../TemperatureToggle/TemperatureToggle";
 import "./CurrentWeatherCard.css";
 import "../CurrentDate/CurrentDate";
 import CurrentDate from "../CurrentDate/CurrentDate";
-
+import TemperatureChart from "../TemperatureChart/TemperatureChart";
+import { API_KEY } from "../../services/weatherService";
 interface CurrentWeatherCardProps {
   weather: Weather;
   handleClose: () => void;
@@ -59,7 +60,12 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
             <CurrentDate />
           </div>
           <div className="city-graph">
-            <p>тут будет график</p>
+            <TemperatureChart
+              key={weather.dt.dt}
+              city={weather.name}
+              language="en"
+              API_KEY={API_KEY}
+            />
           </div>
           <div className="weather-report-wrapper">
             <div className="temperature-wrapper">
