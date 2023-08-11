@@ -83,17 +83,17 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
               <p className="wind">
                 {t("wind")}:{" "}
                 <span className="wind-number">{weather.wind.speed}</span>{" "}
-                {t("m/s")}
+                <span>{t("m/s")}</span>
               </p>
               <p className="humidity">
                 {t("humidity")}:{" "}
                 <span className="humidity-number">{weather.main.humidity}</span>{" "}
-                %
+                <span>%</span>
               </p>
               <p className="pressure">
                 {t("pressure")}:{" "}
                 <span className="pressure-number">{weather.main.pressure}</span>{" "}
-                {t("Pa")}
+                <span>{t("Pa")}</span>
               </p>
             </div>
           </div>

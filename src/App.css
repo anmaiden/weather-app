@@ -2,7 +2,7 @@
   font-family: 'Open Sans', sans-serif;
 }
 .app-container{
-  max-width: 1480px;
+  max-width: 100%;
   padding: 20px;
   margin: 0 auto;
 }

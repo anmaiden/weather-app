@@ -24,7 +24,9 @@ const TemperatureToggle: React.FC<TemperatureToggleProps> = ({
   return (
     <div className="temperature-toggle">
       <p className="temperature">
-        {isCelsius ? roundedCelsiusTemperature : roundedFahrenheitTemperature}
+        <span className="temperature-number">
+          {isCelsius ? roundedCelsiusTemperature : roundedFahrenheitTemperature}
+        </span>
         <span className="units-measurement" onClick={toggleTemperatureUnit}>
           <span className={`temperature-unit ${isCelsius ? "active" : ""}`}>
             {"\u00b0"}C

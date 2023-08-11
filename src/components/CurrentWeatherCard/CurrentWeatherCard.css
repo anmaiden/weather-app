@@ -14,7 +14,7 @@
 .card-item {
   padding: 10px 20px;
   text-align: end;
-  width: 400px;
+  width: 300px;
   height: auto;
   background-color: rgb(255, 250, 241);
   border-radius: 10px;
@@ -26,6 +26,15 @@
   display: flex;
   padding: 10px 0px;
   justify-content: space-between;
+}
+.weather-info-wrapper p{
+  font-size: 12px;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+}
+.weather-info-wrapper span {
+  font-weight: bold;
+  color: rgb(226, 147, 1);
 }
 .current-date{
   display: flex;
@@ -69,5 +78,9 @@
   color: rgb(189, 189, 161);
 }
 .temperature-unit.active {
-  color: rgb(126, 126, 106);
+  color: rgb(226, 147, 1);
+}
+.temperature-number{
+  font-size: 45px;
+  font-weight: normal;
 }
