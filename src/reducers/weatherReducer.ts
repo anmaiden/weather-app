@@ -1,21 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Weather } from '../types/WeatherData';
 
+
+// language settings saved in localStorage
+  const savedLanguage = localStorage.getItem('language');
+
 interface WeatherState {
   currentWeather: Weather | null;
   cities: string[];
   temperatureUnit: 'C' | 'F';
-  language: 'en' | 'ua' | 'ru';
+  language: string | null;
 }
 
 const initialState: WeatherState = {
   currentWeather: null,
   cities: [],
   temperatureUnit: 'C',
-  language: 'en',
+  language: savedLanguage ? savedLanguage : 'en',
 };
+  
 
-const weatherSlice = createSlice({
+  const weatherSlice = createSlice({
   name: 'weather',
   initialState,
   reducers: {

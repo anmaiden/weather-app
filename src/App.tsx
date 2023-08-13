@@ -3,7 +3,10 @@ import "./App.css";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "./components/LanguageSelector/LanguageSelector";
 import CitySearch from "./components/CitySearch/CitySearch";
-import i18n from "./i18n";
+
+// redux imports
+import { Provider } from "react-redux";
+import store from "./reducers//store";
 
 const langs = ["en", "ru", "ua"];
 
@@ -16,12 +19,14 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <div className="lang-container">
-        <LanguageSelector langs={langs} onChange={handleLanguageChange} />
+    <Provider store={store}>
+      <div className="app-container">
+        <header className="lang-container">
+          <LanguageSelector langs={langs} onChange={handleLanguageChange} />
+        </header>
+        <CitySearch />
       </div>
-      <CitySearch />
-    </div>
+    </Provider>
   );
 }
 
