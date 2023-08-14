@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CitySearch.css";
 import { withTranslation } from "react-i18next";
-import { getCurrentWeather } from "../../services/weatherService";
+import { API_KEY, getCurrentWeather } from "../../services/weatherService";
 import { Weather } from "../../types/WeatherData";
 import CurrentWeatherCard from "../CurrentWeatherCard/CurrentWeatherCard";
+import axios from "axios";
 
 interface CitySearchProps {
   t: (key: string) => string;
@@ -30,6 +31,59 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   };
 
+  //////////////////////////
+  //Location weather
+
+  const [locationWeather, setLocationWeather] = useState<Weather | null>(null);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      // check if geolocation is supported/enabled on current browser
+      navigator.geolocation.getCurrentPosition(function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        getCurrentWeatherByLatLng(lat, lon);
+      });
+    }
+  }, []);
+
+  const getCurrentWeatherByLatLng = async (lat: number, lon: number) => {
+    const currentLanguage = window.localStorage.getItem("language"); //get a lang from localStorage
+    try {
+      const weatherData = await getCurrentWeatherByLocation(
+        lat,
+        lon,
+        currentLanguage
+      );
+      if (
+        !weatherCards.find((cityWeather) => cityWeather.id === weatherData.id)
+      ) {
+        setLocationWeather(weatherData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getCurrentWeatherByLocation = async (
+    lat: number,
+    lon: number,
+    currentLanguage: string | null
+  ) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=${currentLanguage}&units=metric`;
+    const response = await axios.get(url);
+    return response.data;
+  };
+
+  if (
+    locationWeather &&
+    !weatherCards.find((cityWeather) => cityWeather.id === locationWeather.id)
+  ) {
+    setWeatherCards([locationWeather, ...weatherCards]);
+  }
+
+  //////////////////////
+
   const handleClose = (id: string) => {
     setWeatherCards((prevWeatherCards) => {
       const updatedCards = [...prevWeatherCards];
@@ -38,6 +92,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
       return updatedCards;
     });
   };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
@@ -61,6 +116,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
       <div className="weather-cards-container">
         {weatherCards.map((weatherData, index) => (
           <CurrentWeatherCard
+            language="en"
             key={weatherData.id}
             weather={weatherData}
             handleClose={() => handleClose(weatherData.id)}

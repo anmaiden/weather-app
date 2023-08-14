@@ -4,7 +4,7 @@ import { getCurrentWeather } from "../../services/weatherService";
 
 interface TemperatureChartProps {
   city: string;
-  language: "en" | "ua" | "ru";
+  language: string;
   API_KEY: string;
 }
 
@@ -15,6 +15,12 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({
 }: TemperatureChartProps) => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const [currentTemp, setCurrentTemp] = useState<number | null>(null);
+
+  const [currentLanguage, setCurrentLanguage] = useState("en"); // add  state for language
+
+  useEffect(() => {
+    setCurrentLanguage(window.localStorage.getItem("language") || "en"); // get lang from localStorage
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +37,7 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({
 
       const fetchData = async () => {
         const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&lang=${language}&units=metric`
+          `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&lang=${currentLanguage}&units=metric` // используем текущий язык для запроса к API
         );
         const data = await response.json();
 
@@ -88,7 +94,7 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({
 
       fetchData();
     }
-  }, [chartRef, currentTemp, city, language, API_KEY]);
+  }, [chartRef, currentTemp, city, currentLanguage, API_KEY]); // use current lang
 
   return <canvas ref={chartRef} />;
 };

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { withTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react";
+import { WithTranslation, withTranslation } from "react-i18next";
 import "../../i18n";
 import { Weather } from "../../types/WeatherData";
 import TemperatureToggle from "../TemperatureToggle/TemperatureToggle";
@@ -7,20 +7,33 @@ import "./CurrentWeatherCard.css";
 import "../CurrentDate/CurrentDate";
 import CurrentDate from "../CurrentDate/CurrentDate";
 import TemperatureChart from "../TemperatureChart/TemperatureChart";
-import { API_KEY } from "../../services/weatherService";
+import { API_KEY, getCurrentWeather } from "../../services/weatherService";
+import { setCurrentWeather } from "../../reducers/weatherReducer";
+
 interface CurrentWeatherCardProps {
   weather: Weather;
   handleClose: () => void;
   t: (key: string) => string;
+  language: string;
 }
 
 const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   weather,
   handleClose,
   t,
+  language,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [isCelsius, setIsCelsius] = useState(true);
+
+  const [isCelsius, setIsCelsius] = useState(() => {
+    const storedUnit = localStorage.getItem("temperatureUnit");
+    return storedUnit ? storedUnit === "C" : true;
+  });
+  //save temp init in local storage
+  const handleTemperatureUnitChange = (isCelsius: boolean) => {
+    setIsCelsius(isCelsius);
+    localStorage.setItem("temperatureUnit", isCelsius ? "C" : "F");
+  };
 
   const internalHandleClose = () => {
     setIsOpen(false);
@@ -63,7 +76,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
             <TemperatureChart
               key={weather.dt.dt}
               city={weather.name}
-              language="en"
+              language={language}
               API_KEY={API_KEY}
             />
           </div>
@@ -72,7 +85,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
               <TemperatureToggle
                 celsiusTemperature={weather.main.temp}
                 fahrenheitTemperature={weather.main.temp * 1.8 + 32}
-                onTemperatureUnitChange={setIsCelsius}
+                onTemperatureUnitChange={handleTemperatureUnitChange}
               />
               <div className="feels-like">
                 {t("feelsLike")}: {feelsLikeTemperature}{" "}

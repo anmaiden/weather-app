@@ -1,4 +1,5 @@
 export interface Weather {
+  language: string;
   name: string;
   id: string;
   main: {

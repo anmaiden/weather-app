@@ -3,24 +3,31 @@ import { Weather } from '../types/WeatherData';
 
 
 // language settings saved in localStorage
-  const savedLanguage = localStorage.getItem('language');
+const savedLanguage = localStorage.getItem('language');
 
-interface WeatherState {
+export interface WeatherCard {
+  id: string;
+  isOpen: boolean;
+  data: Weather;
+}
+
+export interface WeatherState {
   currentWeather: Weather | null;
   cities: string[];
   temperatureUnit: 'C' | 'F';
   language: string | null;
+  weatherCards: WeatherCard[];
 }
 
-const initialState: WeatherState = {
+export const initialState: WeatherState = {
   currentWeather: null,
   cities: [],
   temperatureUnit: 'C',
   language: savedLanguage ? savedLanguage : 'en',
+  weatherCards: [],
 };
-  
 
-  const weatherSlice = createSlice({
+const weatherSlice = createSlice({
   name: 'weather',
   initialState,
   reducers: {
@@ -36,6 +43,16 @@ const initialState: WeatherState = {
     setLanguage: (state, action: PayloadAction<'en' | 'ua' | 'ru'>) => {
       state.language = action.payload;
     },
+    removeWeatherCard: (state, action: PayloadAction<string>) => {
+      const index = state.weatherCards.findIndex(c => c.id === action.payload);
+      if (index !== -1) {
+        state.weatherCards[index].isOpen = !state.weatherCards[index].isOpen;
+      }
+    },
+    addWeatherCard: (state, action: PayloadAction<Weather>) => {
+      const id = state.weatherCards.length ? (parseInt(state.weatherCards[state.weatherCards.length - 1].id) + 1).toString() : "0";
+      state.weatherCards.push({ id, isOpen: true, data: action.payload });
+    },
   },
 });
 
@@ -44,6 +61,8 @@ export const {
   addCity,
   setTemperatureUnit,
   setLanguage,
+  removeWeatherCard,
+  addWeatherCard,
 } = weatherSlice.actions;
 
 export default weatherSlice.reducer;

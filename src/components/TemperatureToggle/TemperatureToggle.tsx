@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 interface TemperatureToggleProps {
   celsiusTemperature: number;
@@ -13,10 +13,13 @@ const TemperatureToggle: React.FC<TemperatureToggleProps> = ({
 }) => {
   const [isCelsius, setIsCelsius] = useState(true);
 
-  const toggleTemperatureUnit = () => {
-    setIsCelsius(!isCelsius);
-    onTemperatureUnitChange(!isCelsius);
-  };
+  const toggleTemperatureUnit = useCallback(() => {
+    setIsCelsius((prevIsCelsius) => {
+      const newIsCelsius = !prevIsCelsius;
+      onTemperatureUnitChange(newIsCelsius);
+      return newIsCelsius;
+    });
+  }, [onTemperatureUnitChange]);
 
   const roundedCelsiusTemperature = Math.round(celsiusTemperature);
   const roundedFahrenheitTemperature = Math.round(fahrenheitTemperature);
