@@ -13,3 +13,12 @@ export const getCurrentWeather = async (
   return response.data;
 };
 
+export const getCurrentWeatherByLocation = async (
+    lat: number,
+    lon: number,
+    currentLanguage: string | null
+  ) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=${currentLanguage}&units=metric`;
+    const response = await axios.get(url);
+    return response.data;
+  };

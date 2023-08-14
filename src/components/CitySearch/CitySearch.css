@@ -28,20 +28,23 @@
 .search-btn:hover{
   cursor: pointer;
 }
-.suggestions {
+.city-suggestions {
+  width: 20%;
   color: black;
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 5px 0;
+  margin: 0 auto;
 }
 
-.suggestions li {
+.city-suggestions li {
   cursor: pointer;
   padding: 5px;
 }
 
-.suggestions li:hover {
-  background-color: #f2f2f2;
+.city-suggestions li:hover {
+  transition-duration: .5s;
+  background-color: rgba(255, 249, 216, 0.1);
+  box-shadow: 0px 0px 23px rgba(94, 22, 22, 0.1);
 }
 .error-message{
   padding-top: 20px;
