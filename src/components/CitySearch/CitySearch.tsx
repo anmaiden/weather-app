@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./CitySearch.css";
 import { withTranslation } from "react-i18next";
-import {
-  API_KEY,
-  getCurrentWeather,
-  getCurrentWeatherByLocation,
-} from "../../services/weatherService";
-
+import { getCurrentWeather } from "../../services/weatherService";
 import { Weather } from "../../types/WeatherData";
 import CurrentWeatherCard from "../CurrentWeatherCard/CurrentWeatherCard";
 
@@ -14,7 +9,8 @@ interface CitySearchProps {
   t: (key: string) => string;
 }
 
-interface City {
+export interface City {
+  id: string;
   name: string;
   country: string;
 }
@@ -25,7 +21,9 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
   const [error, setError] = useState<string | null>(null);
   const [citiesHistory, setCitiesHistory] = useState<City[]>([]);
   const [suggestedCities, setSuggestedCities] = useState<City[]>([]);
+  const [locationWeather, setLocationWeather] = useState<Weather | null>(null);
 
+  //get cities from localStorage
   useEffect(() => {
     const citiesFromLocalStorage = localStorage.getItem("cities");
     if (citiesFromLocalStorage) {
@@ -33,14 +31,31 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   }, []);
 
+  // save cities in localStorage with func setCitiesHistory
   const handleSearch = async (cityName: string) => {
     try {
-      const weatherData = await getCurrentWeather(cityName, "en");
-      const id = Date.now().toString(); // uniq id
-      setWeatherCards((prevWeatherCards) => [
-        ...prevWeatherCards,
-        { ...weatherData, id },
-      ]); // add id for card
+      const currentLanguage = window.localStorage.getItem("language");
+      const weatherData = await getCurrentWeather(
+        null,
+        null,
+        cityName,
+        currentLanguage
+      );
+      const id = Date.now().toString(); // generate unique id
+      const weatherDataWithId = { ...weatherData, id };
+
+      // check if weather card for this city already exists
+      if (!weatherCards.some((weatherCard) => weatherCard.id === id)) {
+        setWeatherCards((prevWeatherCards) => [
+          ...prevWeatherCards,
+          weatherDataWithId,
+        ]);
+        // Save the updated weather cards to localStorage
+        localStorage.setItem(
+          "weatherCards",
+          JSON.stringify([...weatherCards, weatherDataWithId])
+        );
+      }
 
       // Save city to local storage
       setCitiesHistory((prevCities) => {
@@ -50,14 +65,14 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
         );
         if (!existingCity) {
           updatedCities.push({
+            id: weatherData.dt.dt,
             name: cityName,
             country: weatherData.sys.country,
           });
+          localStorage.setItem("cities", JSON.stringify(updatedCities));
         }
-        localStorage.setItem("cities", JSON.stringify(updatedCities));
         return updatedCities;
       });
-
       setCity("");
       setError(null);
       setSuggestedCities([]);
@@ -67,13 +82,11 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   };
 
-  //////////////////////////// User Location  //////////////////////////
+  //////////////////////////////////////////// GEOLOCATION //////////////////////////////////////////////////////////////////
 
-  const [locationWeather, setLocationWeather] = useState<Weather | null>(null);
-
+  // if user apply geolocation we get his coordinates
   useEffect(() => {
     if ("geolocation" in navigator) {
-      // check if geolocation is supported/enabled on current browser
       navigator.geolocation.getCurrentPosition(function success(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
@@ -82,12 +95,14 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   }, []);
 
+  // we add a weather card with weather using coordinates and setWeatherCards first - userCard (his city) then weatherCards
   const getCurrentWeatherByLatLng = async (lat: number, lon: number) => {
-    const currentLanguage = window.localStorage.getItem("language"); //get a lang from localStorage
+    const currentLanguage = window.localStorage.getItem("language");
     try {
-      const weatherData = await getCurrentWeatherByLocation(
+      const weatherData = await getCurrentWeather(
         lat,
         lon,
+        null,
         currentLanguage
       );
       if (
@@ -109,17 +124,29 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // close a weather card
-  const handleClose = (id: string) => {
-    setWeatherCards((prevWeatherCards) => {
-      const updatedCards = [...prevWeatherCards];
-      const index = updatedCards.findIndex((card) => card.id === id); // find id
-      updatedCards.splice(index, 1);
-      return updatedCards;
-    });
+  // Removing cards from weatherCards array in localStorage
+  const removeWeatherCardFromLocalStorage = (id: string) => {
+    const cardsFromLocalStorage = localStorage.getItem("weatherCards");
+    if (cardsFromLocalStorage) {
+      const cards: Weather[] = JSON.parse(cardsFromLocalStorage);
+      const updatedCards = cards.filter((card) => card.id !== id);
+      localStorage.setItem("weatherCards", JSON.stringify(updatedCards));
+    }
   };
 
-  // search by key press Enter
+  const handleRemoveCard = (id: string) => {
+    if (!locationWeather || locationWeather.id !== id) {
+      setWeatherCards((weatherCards) =>
+        weatherCards.filter((card) => card.id !== id)
+      );
+      removeWeatherCardFromLocalStorage(id);
+    }
+  };
+
+  const handleClose = () => {
+    //
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const cityName = city.trim();
@@ -128,8 +155,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
       }
     }
   };
-
-  // save citiesHistory
+  // show citites under input
   const handleInputClick = () => {
     if (city.trim().length === 0) {
       setSuggestedCities(citiesHistory);
@@ -140,8 +166,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     });
   };
 
-  //updates the current value of the input, then filter  by the name of the city that starts with the entered value,  If the value of the entered city is empty, `suggestedCities` will be cleared.
-
+  // search cities history
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCity(value);
@@ -150,7 +175,8 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
       const filteredCities = citiesHistory.filter((city) =>
         city.name.toLowerCase().startsWith(value.toLowerCase())
       );
-      const formattedCities = filteredCities.map((city) => ({
+      const formattedCities: City[] = filteredCities.map((city) => ({
+        id: city.id,
         name: `${city.name.charAt(0).toUpperCase()}${city.name.slice(1)}`,
         country: city.country,
       }));
@@ -160,8 +186,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   };
 
-  //finds the selected city in `citiesHistory`, then updates `city` and calls `handleSearch' with the name of the selected city.
-
+  // click on a suggestion
   const handleOptionClick = (name: string) => {
     const selectedCity = citiesHistory.find(
       (city) => city.name.toLowerCase() === name.toLowerCase()
@@ -172,7 +197,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
     }
   };
 
-  // if user unfocused input
+  // unfocus input field
   const handleInputBlur = () => {
     setTimeout(() => {
       setSuggestedCities([]);
@@ -210,12 +235,14 @@ const CitySearch: React.FC<CitySearchProps> = ({ t }) => {
         </ul>
       )}
       <div className="weather-cards-container">
-        {weatherCards.map((weatherData, index) => (
+        {weatherCards.map((weatherData) => (
           <CurrentWeatherCard
-            language="en"
+            language={window.localStorage.getItem("language")}
             key={weatherData.id}
             weather={weatherData}
-            handleClose={() => handleClose(weatherData.id)}
+            cityId={weatherData.id}
+            onClose={handleRemoveCard}
+            handleClose={handleClose}
           />
         ))}
       </div>

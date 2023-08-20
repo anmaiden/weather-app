@@ -31,12 +31,6 @@ const weatherSlice = createSlice({
   name: 'weather',
   initialState,
   reducers: {
-    setCurrentWeather: (state, action: PayloadAction<Weather>) => {
-      state.currentWeather = action.payload;
-    },
-    addCity: (state, action: PayloadAction<string>) => {
-      state.cities.push(action.payload);
-    },
     setTemperatureUnit: (state, action: PayloadAction<'C' | 'F'>) => {
       state.temperatureUnit = action.payload;
     },
@@ -44,25 +38,15 @@ const weatherSlice = createSlice({
       state.language = action.payload;
     },
     removeWeatherCard: (state, action: PayloadAction<string>) => {
-      const index = state.weatherCards.findIndex(c => c.id === action.payload);
-      if (index !== -1) {
-        state.weatherCards[index].isOpen = !state.weatherCards[index].isOpen;
-      }
-    },
-    addWeatherCard: (state, action: PayloadAction<Weather>) => {
-      const id = state.weatherCards.length ? (parseInt(state.weatherCards[state.weatherCards.length - 1].id) + 1).toString() : "0";
-      state.weatherCards.push({ id, isOpen: true, data: action.payload });
+      state.weatherCards = state.weatherCards.filter(c => c.id !== action.payload);
     },
   },
 });
 
 export const {
-  setCurrentWeather,
-  addCity,
   setTemperatureUnit,
   setLanguage,
   removeWeatherCard,
-  addWeatherCard,
 } = weatherSlice.actions;
 
 export default weatherSlice.reducer;

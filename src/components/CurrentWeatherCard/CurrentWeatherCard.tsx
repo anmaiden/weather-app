@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
 import "../../i18n";
 import { Weather } from "../../types/WeatherData";
 import TemperatureToggle from "../TemperatureToggle/TemperatureToggle";
@@ -7,54 +6,69 @@ import "./CurrentWeatherCard.css";
 import "../CurrentDate/CurrentDate";
 import CurrentDate from "../CurrentDate/CurrentDate";
 import TemperatureChart from "../TemperatureChart/TemperatureChart";
-import { API_KEY, getCurrentWeather } from "../../services/weatherService";
-import { setCurrentWeather } from "../../reducers/weatherReducer";
+import { API_KEY } from "../../services/weatherService";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducers/store";
+import { setTemperatureUnit } from "../../reducers/weatherReducer";
+import { t } from "i18next";
+import { withTranslation } from "react-i18next";
 
-interface CurrentWeatherCardProps {
+export interface CurrentWeatherCardProps {
   weather: Weather;
+  onClose: (id: string) => void;
+  cityId: string;
   handleClose: () => void;
-  t: (key: string) => string;
-  language: string;
+  language: string | null;
 }
 
 const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   weather,
-  handleClose,
-  t,
-  language,
+  onClose,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  // value of the temperature units will be read from localStorage
+  const temperatureUnit = useSelector(
+    (state: RootState) => state.weather.temperatureUnit
+  );
+  const dispatch = useDispatch();
 
-  const [isCelsius, setIsCelsius] = useState(() => {
+  // value of the temperature units will be read from localStorage
+  const [tempUnit, setTempUnit] = useState<"C" | "F">("C");
+
+  useEffect(() => {
     const storedUnit = localStorage.getItem("temperatureUnit");
-    return storedUnit ? storedUnit === "C" : true;
-  });
-  //save temp init in local storage
-  const handleTemperatureUnitChange = (isCelsius: boolean) => {
-    setIsCelsius(isCelsius);
-    localStorage.setItem("temperatureUnit", isCelsius ? "C" : "F");
-  };
+    if (storedUnit && (storedUnit === "C" || storedUnit === "F")) {
+      setTempUnit(storedUnit);
+    }
+  }, []);
 
-  const internalHandleClose = () => {
-    setIsOpen(false);
-    handleClose();
-  };
+  // calculating temperature in field FeelsLike
+  const feelsLikeTemperature =
+    tempUnit === "C"
+      ? Math.round(weather.main.feels_like)
+      : Math.round(weather.main.feels_like * 1.8 + 32);
 
-  const feelsLikeTemperature = isCelsius
-    ? Math.round(weather.main.feels_like)
-    : Math.round(weather.main.feels_like * 1.8 + 32);
-
-  if (!isOpen) {
-    return null;
-  }
+  // icon for weather
   const iconUrl = `https://openweathermap.org/img/w/${weather.weather[0].icon}.png`;
+
+  // remove card on click "close"
+  const handleRemoveCard = () => {
+    onClose(weather.id);
+  };
+
+  const handleTemperatureUnitChange = (isCelsius: boolean) => {
+    const newTemperatureUnit = isCelsius ? "C" : "F";
+    localStorage.setItem("temperatureUnit", newTemperatureUnit);
+    setTempUnit(newTemperatureUnit);
+    dispatch(setTemperatureUnit(newTemperatureUnit));
+  };
+
   return (
     <div>
       <div className="city-card-wrapper">
         <div className="card-item">
           <div className="close-btn">
-            <button onClick={internalHandleClose} className="btn-close">
-              X
+            <button onClick={handleRemoveCard} className="btn-close">
+              &#x2715;
             </button>
           </div>
           <div className="city-info-wrapper">
@@ -76,8 +90,8 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
             <TemperatureChart
               key={weather.dt.dt}
               city={weather.name}
-              language={language}
               API_KEY={API_KEY}
+              language="en"
             />
           </div>
           <div className="weather-report-wrapper">
@@ -85,11 +99,12 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
               <TemperatureToggle
                 celsiusTemperature={weather.main.temp}
                 fahrenheitTemperature={weather.main.temp * 1.8 + 32}
-                onTemperatureUnitChange={handleTemperatureUnitChange}
+                temperatureUnit={tempUnit}
+                onToggle={handleTemperatureUnitChange}
               />
               <div className="feels-like">
-                {t("feelsLike")}: {feelsLikeTemperature}{" "}
-                <span>{isCelsius ? `${"\u00b0"}C` : `${"\u00b0"}F`}</span>
+                {t("feelsLike")}: {feelsLikeTemperature}
+                <span>{tempUnit === "C" ? "\u00b0C" : "\u00b0F"}</span>
               </div>
             </div>
             <div className="weather-info-wrapper">

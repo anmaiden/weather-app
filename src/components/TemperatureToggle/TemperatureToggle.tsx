@@ -1,41 +1,42 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 
 interface TemperatureToggleProps {
   celsiusTemperature: number;
   fahrenheitTemperature: number;
-  onTemperatureUnitChange: (isCelsius: boolean) => void;
+  temperatureUnit: "C" | "F";
+  onToggle: (isCelsius: boolean) => void;
 }
 
 const TemperatureToggle: React.FC<TemperatureToggleProps> = ({
   celsiusTemperature,
   fahrenheitTemperature,
-  onTemperatureUnitChange,
+  temperatureUnit,
+  onToggle,
 }) => {
-  const [isCelsius, setIsCelsius] = useState(true);
-
-  const toggleTemperatureUnit = useCallback(() => {
-    setIsCelsius((prevIsCelsius) => {
-      const newIsCelsius = !prevIsCelsius;
-      onTemperatureUnitChange(newIsCelsius);
-      return newIsCelsius;
-    });
-  }, [onTemperatureUnitChange]);
-
-  const roundedCelsiusTemperature = Math.round(celsiusTemperature);
-  const roundedFahrenheitTemperature = Math.round(fahrenheitTemperature);
+  const roundedTemperature = Math.round(
+    temperatureUnit === "C" ? celsiusTemperature : fahrenheitTemperature
+  );
 
   return (
     <div className="temperature-toggle">
       <p className="temperature">
-        <span className="temperature-number">
-          {isCelsius ? roundedCelsiusTemperature : roundedFahrenheitTemperature}
-        </span>
-        <span className="units-measurement" onClick={toggleTemperatureUnit}>
-          <span className={`temperature-unit ${isCelsius ? "active" : ""}`}>
+        <span className="temperature-number">{roundedTemperature}</span>
+        <span className="units-measurement">
+          <span
+            className={`temperature-unit ${
+              temperatureUnit === "C" ? "active" : ""
+            }`}
+            onClick={() => onToggle(true)}
+          >
             {"\u00b0"}C
           </span>
           {" | "}
-          <span className={`temperature-unit ${!isCelsius ? "active" : ""}`}>
+          <span
+            className={`temperature-unit ${
+              temperatureUnit === "F" ? "active" : ""
+            }`}
+            onClick={() => onToggle(false)}
+          >
             {"\u00b0"}F
           </span>
         </span>
